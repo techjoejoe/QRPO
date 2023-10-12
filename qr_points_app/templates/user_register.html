@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Gradient background */
+        body {
+            background: linear-gradient(135deg, #4C74D9, #8245BF);
+            
+            /* Overlay pattern */
+            background-image: url('data:image/png;base64,...'); 
+            background-blend-mode: overlay; 
+            background-repeat: repeat; 
+        }
+    </style>
+
+    <title>Register</title>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    Register
+                </div>
+                <div class="card-body">
+                    {% for field, errors in form.errors.items() %}
+                        {% for error in errors %}
+                            <div class="alert alert-danger">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <form action="{{ url_for('users.register') }}" method="post" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.first_name.label(class="form-control-label") }}
+                            {{ form.first_name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.last_name.label(class="form-control-label") }}
+                            {{ form.last_name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.email.label(class="form-control-label") }}
+                            {{ form.email(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password.label(class="form-control-label") }}
+                            {{ form.password(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.confirm_password.label(class="form-control-label") }}
+                            {{ form.confirm_password(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.photo.label(class="form-control-label") }}
+                            {{ form.photo() }}
+                        </div>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var firstName = document.querySelector('[name="first_name"]').value;
+        var lastName = document.querySelector('[name="last_name"]').value;
+        var email = document.querySelector('[name="email"]').value;
+        var password = document.querySelector('[name="password"]').value;
+        var confirmPassword = document.querySelector('[name="confirm_password"]').value;
+        var photo = document.querySelector('[name="photo"]').files[0];
+        
+        var namePattern = /^[a-zA-Z]+$/;  // Regex pattern for name validation
+
+        if (!firstName.match(namePattern) || !lastName.match(namePattern)) {
+            alert('Names should only contain letters.');
+            e.preventDefault();  // Prevent form submission
+        }
+
+        if (!email.includes('@')) {
+            alert('Please enter a valid email address.');
+            e.preventDefault();  // Prevent form submission
+        }
+        
+        if (password.length < 8) {
+            alert('Password must be at least 8 characters long.');
+            e.preventDefault();  // Prevent form submission
+        }
+
+        if (password !== confirmPassword) {
+            alert('Passwords do not match.');
+            e.preventDefault();  // Prevent form submission
+        }
+
+        if (photo) {
+            var maxSize = 5 * 1024 * 1024;  // 5MB
+
+            if (!allowedFileTypes.includes(photo.type)) {
+                alert('Only jpg and png images are allowed.');
+                e.preventDefault();
+            } else if (photo.size > maxSize) {
+                alert('Image should not exceed 5MB in size.');
+                e.preventDefault();
+            }
+        }
+    });
+</script>
+
+
+</body>
+</html>

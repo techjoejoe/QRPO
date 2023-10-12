@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Styles for Leaderboard -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" type="text/css" href="static/leaderboard_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <!-- Main Header Section -->
+    <div id="app-header" style="background: linear-gradient(135deg, #4C74D9, #8245BF); color: white; padding: 20px;">
+        <img id="user-profile-pic" src="{{ url_for('users.view_avatar', user_id=current_user.id) }}" alt="User Avatar">
+        <div class="h1-wrapper">
+            <h1>Quirkix</h1>
+        </div>
+        <div></div> <!-- Empty div for spacing, to balance out the user profile picture -->
+    </div>
+    <audio id="buzzSound" preload="auto">
+        <source src="{{ url_for('static', filename='buzzin.mp3') }}" type="audio/mpeg">
+    </audio>
+    
+ 
+    <!-- Main Content Area -->
+    <main>
+        <!-- Join Group Option -->
+        {% if current_user.group_id is none %}
+        <h2 class="mb-3">Join a Group</h2>
+        <form action="{{ url_for('users.join_group') }}" method="post">
+            <div class="form-group">
+                <label for="group_code">Enter Group Code:</label>
+                <input type="text" class="form-control" id="group_code" name="group_code" required>
+            </div>
+            <button type="submit" class="btn btn-primary mb-4">Join Group</button>
+        </form>
+        {% else %}
+        <div id="header">
+            <h2>Leaderboard</h2>
+            <div class="top-three">
+                {% if second_user %}
+                <img class="second-place" src="{{ url_for('users.view_avatar', user_id=second_user.id) }}" alt="2nd Place User">
+                {% endif %}
+                {% if first_user %}
+                <img class="first-place" src="{{ url_for('users.view_avatar', user_id=first_user.id) }}" alt="1st Place User">
+                {% endif %}
+                {% if third_user %}
+                <img class="third-place" src="{{ url_for('users.view_avatar', user_id=third_user.id) }}" alt="3rd Place User">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Leaderboard Section -->
+<div id="leaderboard">
+    <div class="ribbon"></div>
+    <table>
+        <!-- Leaderboard Content -->
+        <tbody id="leaderboard-tbody">
+            {% for user in leaderboard %}
+            <tr data-user-id="{{ user.id }}">
+                <td class="number">{{ loop.index }}</td>
+                <td class="name">
+                    <img src="{{ url_for('users.view_avatar', user_id=user.id) }}" alt="User Avatar">
+                    {{ user.first_name + ' ' + user.last_name }}
+                </td>
+                <td class="points">{{ user.points }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+        {% endif %}
+    </main>
+
+    <!-- Fixed Action Bar -->
+    <div class="fixed-action-bar">
+        <form action="{{ url_for('users.leave_group') }}" class="d-inline-block" method="post">
+            <button class="btn-icon">
+                <i class="fas fa-door-open"></i>
+                <span class="btn-text">Leave Group</span>
+            </button>
+        </form>
+        <!-- Assuming Points History is an anchor link, adjust as necessary -->
+        <button class="btn-icon" data-toggle="modal" data-target="#pointsHistoryModal">
+            <i class="fas fa-list-ul"></i>
+            <span class="btn-text">Points History</span>
+        </button>
+
+        <button class="btn-icon" data-toggle="modal" data-target="#buzzerModal">
+            <i class="fas fa-bell"></i>
+            <span class="btn-text">Buzz</span>
+        </button>
+        <form action="{{ url_for('users.logout') }}" class="d-inline-block" method="post">
+            <button class="btn-icon" type="submit">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </button>
+        </form>
+    </div>
+
+   <!-- Buzzer Modal -->
+<div class="modal fade" id="buzzerModal" tabindex="-1" role="dialog" aria-labelledby="buzzerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buzzerModalLabel">Buzz In</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center" style="height: 80vh;">
+                <button class="btn btn-danger btn-lg buzz-circle-btn" id="buzzButtonModal">BUZZ</button>
+            </div>
+            <div id="buzzFeedback" class="text-center" style="display:none;">
+                <p>Successfully buzzed in!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Points History Modal -->
+    <div class="modal fade" id="pointsHistoryModal" tabindex="-1" role="dialog" aria-labelledby="pointsHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pointsHistoryModalLabel">Points History</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Scanned QR Codes Content Here -->
+                    {% if current_user.group_id %}
+                       <p>User is part of a group!</p>
+                    {% if scanned_qrs %}
+                       <p>Scanned QRs are available!</p>
+                    {% else %}
+                       <p>No scanned QRs for this user.</p>
+                     {% endif %}
+                    <table class="table table-bordered table-striped mt-3">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Points</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scanned_qr in scanned_qrs %}
+                            <tr>
+                                <td>{{ scanned_qr.qr_code.value }}</td>
+                                <td>{{ scanned_qr.qr_code.description }}</td>
+                                <td>{{ scanned_qr.last_scanned.strftime('%d-%m-%y') }}</td>
+                                <td>{{ scanned_qr.last_scanned.strftime('%H:%M:%S') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include JavaScript for Leaderboard -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/5.3.6/socket.io.js"></script>
+    <script>
+        // Connect to Socket.IO
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    
+        // Listen for the 'update_leaderboard' event
+        socket.on('update_leaderboard', function(data) {
+            console.log("Received update_leaderboard data:", data);
+    // Use the new leaderboard data to update the DOM
+    let newLeaderboard = data.leaderboard;
+    let currentRows = $('#leaderboard-tbody').children('tr').get();
+    let newRowOrder = [];
+
+    // Create a map of user_id to their row element
+    let userRowMap = {};
+    currentRows.forEach(row => {
+        let userId = $(row).data('user-id');
+        userRowMap[userId] = row;
+    });
+
+    // Build the new order of rows based on the sorted leaderboard data
+    newLeaderboard.forEach(userData => {
+        let userRow = userRowMap[userData.user_id];
+        $(userRow).find('.points').text(userData.points);
+        newRowOrder.push(userRow);
+    });
+
+    // Animate the row changes (you might want to use jQuery UI or another library for more complex animations)
+    $('#leaderboard-tbody').empty();
+    $.each(newRowOrder, function(index, row) {
+        $(row).find('.number').text(index + 1);  // Update rank number
+        $('#leaderboard-tbody').append(row);
+    });
+});
+
+        $(document).ready(function() {
+    var cooldownPeriod = 15000;  // 15 seconds in milliseconds
+    var buzzButton = $("#buzzButtonModal");
+    var buzzSound = document.getElementById('buzzSound');
+
+    // Add an event listener for when the audio finishes playing
+    buzzSound.addEventListener('ended', function() {
+        buzzButton.css("backgroundColor", '');  // Reset the button's color
+    });
+
+    // Handle the buzz button click
+    buzzButton.click(function() {
+        socket.emit('buzz_in', { 'user_id': current_user.id });
+        $(this).prop("disabled", true);  // Disable the buzz button to prevent multiple clicks
+        $(this).css("backgroundColor", 'green'); // Change button's color to green
+        buzzSound.play();  // Play the buzz sound
+
+        // Set a timeout to re-enable the button after the cooldown period
+        setTimeout(function() {
+            buzzButton.prop("disabled", false);
+        }, cooldownPeriod);
+    });
+
+    // Listen for a successful buzz-in feedback
+    socket.on('user_buzzed_first', function(data) {
+        if(data.user_id === current_user.id) {
+            $("#buzzFeedback").show();
+        }
+    });
+});
+
+document.getElementById('buzzButtonModal').addEventListener('click', function() {
+    var buzzSound = document.getElementById('buzzSound');
+    buzzSound.play();
+});
+
+    </script>
+    
+</body>
+</html>

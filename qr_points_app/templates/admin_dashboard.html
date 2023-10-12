@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="mb-4">Trainer Dashboard</h1>
+   
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Group creation form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Create a New Class</h2>
+                <form action="{{ url_for('admin.create_group') }}" method="post">
+                    <div class="form-group">
+                        <label for="group_code">Class Code:</label>
+                        <input type="text" class="form-control" id="group_code" name="group_code" required>
+                        <small class="form-text text-muted">This is the code you give to learners, keep it short but unique.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Class</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- List of Created Groups -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Existing Classes</h3>
+                <ul class="list-group list-group-flush">
+                    {% for group in groups %}
+                        <li class="list-group-item">
+                            {{ group.code }}
+                            <div class="float-right">
+                                <a href="{{ url_for('admin.checkin', group_id=group.id) }}" class="btn btn-primary btn-sm mr-1"><i class="fas fa-sign-in-alt"></i> Check in</a>
+
+                                <a href="{{ url_for('admin.view_learners', group_id=group.id) }}" class="btn btn-primary btn-sm mr-1"><i class="fas fa-users"></i> View Learners</a>
+                                <a href="{{ url_for('admin.show_leaderboard', group_id=group.id) }}" class="btn btn-success btn-sm mr-1"><i class="fas fa-list-ol"></i> Leaderboard</a>
+                                <a href="{{ url_for('admin.manage_qr_codes', group_id=group.id) }}" class="btn btn-info btn-sm mr-1"><i class="fas fa-qrcode"></i> Manage QR Codes</a>
+                                <form action="{{ url_for('admin.delete_group', group_id=group.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this group?');">
+                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+                
+        <!-- Logout button in the bottom right corner -->
+        <div class="fixed-bottom mb-4 mr-4">
+            <a href="{{ url_for('users.logout') }}" class="btn btn-warning"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</body>
+</html>

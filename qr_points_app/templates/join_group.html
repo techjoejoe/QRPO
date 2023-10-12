@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Join Group</title>
+</head>
+<body>
+    <h1>Join a Group</h1>
+    <form action="{{ url_for('users.join_group') }}" method="post">
+        {{ form.hidden_tag() }}
+        <label for="code">Group Code:</label>
+        {{ form.code() }}
+        <br>
+        {{ form.submit() }}
+    </form>
+    </form>
+<a href="{{ url_for('users.user_dashboard') }}">Back to Dashboard</a>
+
+</body>
+</html>

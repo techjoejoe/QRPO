@@ -1,0 +1,351 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rubik', sans-serif;
+  font-size: 62, 5%;
+}
+
+body {
+  background: linear-gradient(135deg, #4C74D9, #8245BF);
+  color: #231e1e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;  /* Prevent horizontal scroll */
+}
+
+main {
+  width: 100%; /* Span the full width */
+  max-width: none; /* Remove the max-width restriction */
+  background-color: transparent; /* Remove the white background */
+  margin: 2rem 0;
+  border-radius: 0; /* Remove the rounded corners */
+  box-shadow: none; /* Remove the shadow */
+  padding: 2rem 0; /* Keep vertical padding, remove horizontal padding */
+}
+/* Responsive Main */
+@media screen and (max-width: 1000px) {
+  main {
+    width: 95%;
+  }
+}
+
+
+/* Header Styling */
+#app-header {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Center the content */
+  align-items: center;
+  position: relative;
+}
+#app-header::before {
+  content: "";
+  width: 50px;  /* same width as the profile picture */
+  flex-shrink: 0; /* prevent it from shrinking */
+  order: 2; /* place it to the right of the title */
+}
+
+#user-profile-pic {
+  border-radius: 50%;
+  width: 50px;
+}
+
+h1 {
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  margin: 0;
+}
+.h1-wrapper {
+  flex: 1; /* Allow this to take available space */
+  text-align: center; /* Center the text */
+}
+/* Leaderboard Styling */
+#leaderboard {
+  width: 100%;
+  background-color: transparent; /* Making it transparent */
+  padding: 1rem 0; /* Keep vertical padding, remove horizontal padding */
+}
+
+#leaderboard table {
+  width: 100%;
+  table-layout: fixed;  /* This will ensure columns don't cause overflow */
+}
+#leaderboard .number {
+  width: 10%;
+  color: #000000;
+  font-size: 28px; /* Adjust the size as needed */
+  font-weight: bold;
+}
+#leaderboard .name {
+  width: 60%;
+  color: #111010;
+  font-size: 16px; /* Adjust the size as needed */
+
+}
+#leaderboard .points {
+  width: 30%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#leaderboard th, #leaderboard td {
+  padding: 1rem 2rem;
+  text-align: left;
+  color: #fdfdfd;
+  font-size: 1.4rem;
+}
+/* Styling for user photo in the leaderboard */
+#leaderboard .user-photo {
+  width: 50px; /* Or any desired width */
+  height: 50px;
+  border-radius: 50%; /* To make it circular */
+  margin-right: 1rem; /* Spacing between the photo and the name */
+}
+
+/* Fixed Action Bar */
+.fixed-action-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.fixed-action-bar .btn-icon i {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+.btn-icon {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 10px;
+  transition: color 0.3s ease;
+}
+
+/* Points History Modal */
+#pointsHistoryModal .modal-content {
+  background-color: #141a39;
+  color: #fdfdfd;
+}
+
+#pointsHistoryModal .table {
+  color: #141a39;
+}
+
+#pointsHistoryModal .table thead {
+  background-color: #fdfdfd;
+}
+#leaderboard .name img, #app-header img {
+  width: 50px; /* adjust if necessary */
+  height: 50px; /* adjust if necessary */
+  border-radius: 50%; 
+  object-fit: cover;
+  margin-right: 10px; /* only necessary for the leaderboard images */
+  border: 3px solid #FFFFFF; /* adjust border width and color as desired */
+
+}
+
+#header h2 {
+  color: white;
+  text-align: left;
+  margin-left: 1rem;
+  margin-top: -3.1rem;  /* Adjust this value as needed to reduce the space */
+  margin-bottom: 2.5rem;
+}
+
+
+.top-three {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* space between the images */
+}
+
+.first-place, .second-place, .third-place {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.first-place {
+  width: 120px;
+  height: 120px;
+  border: 5px solid gold;
+}
+
+.second-place {
+  width: 100px;
+  height: 100px;
+  border: 4px solid silver;
+}
+
+.third-place {
+  width: 90px;
+  height: 90px;
+  border: 4px solid #cd7f32; /* bronze color */
+}
+@keyframes shimmer {
+  0% {
+      background-position: -200% 0;
+  }
+  100% {
+      background-position: 200% 0;
+  }
+}
+
+.first-place, .second-place, .third-place {
+  position: relative;
+  overflow: hidden;
+}
+
+.first-place::before, .second-place::before, .third-place::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer 0.8s infinite;  /* reduced from 1.5s */
+}
+@keyframes sparkle {
+  0% {
+      opacity: 0;
+      transform: scale(0.2);
+  }
+  50% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+      transform: scale(1);
+  }
+}
+
+.first-place::after, .second-place::after, .third-place::after {
+  content: "✨✨✨✨✨"; /* using the sparkle emoji */
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: sparkle 0.3s infinite;
+  animation: sparkle 0.2s infinite;  /* reduced from 0.3s */
+  white-space: nowrap;
+}
+
+.second-place::after {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0.5s;
+}
+
+.third-place::after {
+  top: 30%;
+  left: 30%;
+  animation-delay: 0.7s;
+}
+/* Points History Modal */
+
+.modal-content {
+  border-radius: 8px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  background-color: #4C74D9; /* Using the color from the header gradient for consistency */
+  color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.table {
+  margin-bottom: 0; /* Removing the default margin */
+  color: white;
+
+}
+
+.thead-dark th {
+  background-color: #8245BF; /* Using the color from the header gradient for consistency */
+  color: white;
+  border-color: #4C74D9; /* Giving it a lighter border color for contrast */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(76, 116, 217, 0.05); /* Lighter shade of the header color for zebra-striping */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border-color: #e0e0e0;
+}
+
+.modal-footer {
+  background-color: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+}
+#pointsHistoryModal table,
+#pointsHistoryModal table thead th,
+#pointsHistoryModal table tbody td {
+    color: white;
+}
+#pointsHistoryModal table,
+#pointsHistoryModal table thead th,
+#pointsHistoryModal table tbody td {
+    color: white;
+}
+.buzz-circle-btn {
+  box-sizing: border-box;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  border: 5px solid silver;
+  font-size: 24px;
+  line-height: 190px;
+  text-align: center;
+  padding: 0;
+  background: linear-gradient(to bottom, #ff5f5f, #d42727);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2), inset 0px -4px 10px rgba(255, 0, 0, 0.2);
+  border: 2px solid #b01f1f;
+  transition: all 0.2s;
+}
+
+.buzz-circle-btn:active {
+  background-color: green;
+  color: white; 
+  box-shadow: inset 0px 4px 10px rgba(0, 128, 0, 0.3);
+  transform: translateY(4px);
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(76, 116, 217, 0.7), rgba(130, 69, 191, 0.7)); /* Gradient with transparency */
+}
+
+.modal-backdrop {
+  background-color: transparent;
+}
+
