@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Styles for Leaderboard -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='leaderboard_styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Leaderboard</title>
+</head>
+<body>
+    <div id="app-header" style="background: linear-gradient(135deg, #4C74D9, #8245BF); color: white; padding: 20px;">
+        <h1 class="h1-wrapper">Leaderboard for {{ group.code }}</h1>
+    </div>
+    <main>
+        <div id="header">
+            <h2>Ranking</h2>
+            <div class="top-three">
+                {% if users[1] %}
+                <img class="second-place" src="{{ url_for('users.view_avatar', user_id=users[1].id) }}" alt="2nd Place User">
+                {% endif %}
+                {% if users[0] %}
+                <img class="first-place" src="{{ url_for('users.view_avatar', user_id=users[0].id) }}" alt="1st Place User">
+                {% endif %}
+                {% if users[2] %}
+                <img class="third-place" src="{{ url_for('users.view_avatar', user_id=users[2].id) }}" alt="3rd Place User">
+                {% endif %}
+            </div>
+        </div>
+        <div id="leaderboard">
+            <table>
+                {% for user in users %}
+                <tr data-user-id="{{ user.id }}">
+                    <td class="number">{{ loop.index }}</td>
+                    <td class="name">
+                        <img src="{{ url_for('users.view_avatar', user_id=user.id) }}" alt="User Avatar">
+                        {{ user.first_name + ' ' + user.last_name }}
+                    </td>
+                    <td class="points">{{ user.points }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div id="buttons">
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="exit btn btn-primary mt-3">Back to Dashboard</a>
+        </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+    <script>
+        // Original Socket.IO functionality for the leaderboard updates
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+        socket.on('update_leaderboard', function(data) {
+            console.log('Leaderboard updated: ', data);
+            var row = document.querySelector(`[data-user-id="${data.user_id}"]`);
+            if(row) {
+                var pointsCell = row.querySelector('.points');
+                if(pointsCell) {
+                    var textNode = [...pointsCell.childNodes].find(node => node.nodeType === 3); // Text node
+                    if(textNode) {
+                        textNode.nodeValue = data.points;
+                    } else {
+                        pointsCell.appendChild(document.createTextNode(data.points));
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

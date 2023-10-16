@@ -8,7 +8,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #4C74D9, #8245BF);
+  background: linear-gradient(135deg, #020202, #190032);
   color: #231e1e;
   min-height: 100vh;
   display: flex;
@@ -38,9 +38,11 @@ main {
 #app-header {
   width: 100%;
   display: flex;
-  justify-content: center; /* Center the content */
+  justify-content: center;
   align-items: center;
   position: relative;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 #app-header::before {
   content: "";
@@ -49,15 +51,18 @@ main {
   order: 2; /* place it to the right of the title */
 }
 
-#user-profile-pic {
+#user-profile-pic, #leaderboard .name img, #app-header img {
   border-radius: 50%;
   width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 3px solid #3d0068;
 }
 
 h1 {
   font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
-  margin: 0;
 }
 .h1-wrapper {
   flex: 1; /* Allow this to take available space */
@@ -76,13 +81,13 @@ h1 {
 }
 #leaderboard .number {
   width: 10%;
-  color: #000000;
+  color: #acacac;
   font-size: 28px; /* Adjust the size as needed */
   font-weight: bold;
 }
 #leaderboard .name {
   width: 60%;
-  color: #111010;
+  color: #acacac;
   font-size: 16px; /* Adjust the size as needed */
 
 }
@@ -111,20 +116,21 @@ h1 {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
+  padding: 4px 0;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: #0c0018;
   z-index: 1000;
   box-sizing: border-box;
 }
 
 .fixed-action-bar .btn-icon i {
-  font-size: 2rem;
-  margin-bottom: 5px;
+  font-size: 1.5rem;
+  margin: 3px;
 }
+
 .btn-icon {
   background: none;
   border: none;
@@ -132,8 +138,8 @@ h1 {
   flex-direction: column;
   align-items: center;
   color: #fff;
-  font-size: 1.2rem;
-  padding: 10px;
+  font-size: .5rem;
+  padding: 5px;
   transition: color 0.3s ease;
 }
 
@@ -162,10 +168,10 @@ h1 {
 
 #header h2 {
   color: white;
-  text-align: left;
+  text-align: center;
   margin-left: 1rem;
   margin-top: -3.1rem;  /* Adjust this value as needed to reduce the space */
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 

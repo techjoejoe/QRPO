@@ -23,21 +23,71 @@
     <audio id="buzzSound" preload="auto">
         <source src="{{ url_for('static', filename='buzzin.mp3') }}" type="audio/mpeg">
     </audio>
-    
+  
+    <!-- Profile Edit Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('users.edit_profile') }}" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editFirstName">First Name</label>
+                        <input type="text" class="form-control" id="editFirstName" name="first_name" value="{{ current_user.first_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name</label>
+                        <input type="text" class="form-control" id="editLastName" name="last_name" value="{{ current_user.last_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" value="{{ current_user.email }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhoto">Profile Photo</label>
+                        <input type="file" class="form-control-file" id="editPhoto" name="photo">
+                        <img src="{{ url_for('users.view_avatar', user_id=current_user.id) }}" alt="Current Profile Photo" style="width: 50px; height: 50px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
  
     <!-- Main Content Area -->
     <main>
-        <!-- Join Group Option -->
-        {% if current_user.group_id is none %}
-        <h2 class="mb-3">Join a Group</h2>
-        <form action="{{ url_for('users.join_group') }}" method="post">
-            <div class="form-group">
-                <label for="group_code">Enter Group Code:</label>
-                <input type="text" class="form-control" id="group_code" name="group_code" required>
-            </div>
-            <button type="submit" class="btn btn-primary mb-4">Join Group</button>
-        </form>
-        {% else %}
+     <!-- Join Group Option -->
+{% if current_user.group_id is none %}
+<div class="container">
+    <h2 class="mb-3 text-center" style="color:white;">Join a Class</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="{{ url_for('users.join_group') }}" method="post" style="max-width: 250px; width: 100%; margin: 0 auto;">
+                <div class="form-group">
+                    <label for="group_code" style="color:white; font-size: 0.8rem;">Enter Class Code provided by your trainer:</label>
+                    <input type="text" class="form-control" id="group_code" name="group_code" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary mb-4">Join Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+
+
         <div id="header">
             <h2>Leaderboard</h2>
             <div class="top-three">
@@ -135,9 +185,7 @@
                 <div class="modal-body">
                     <!-- Scanned QR Codes Content Here -->
                     {% if current_user.group_id %}
-                       <p>User is part of a group!</p>
                     {% if scanned_qrs %}
-                       <p>Scanned QRs are available!</p>
                     {% else %}
                        <p>No scanned QRs for this user.</p>
                      {% endif %}
@@ -151,15 +199,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for scanned_qr in scanned_qrs %}
-                            <tr>
-                                <td>{{ scanned_qr.qr_code.value }}</td>
-                                <td>{{ scanned_qr.qr_code.description }}</td>
-                                <td>{{ scanned_qr.last_scanned.strftime('%d-%m-%y') }}</td>
-                                <td>{{ scanned_qr.last_scanned.strftime('%H:%M:%S') }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                            <tbody>
+                                {% for scanned_qr in scanned_qrs %}
+                                <tr>
+                                    <td>{{ scanned_qr.qr_code.value }}</td>
+                                    <td>{{ scanned_qr.qr_code.description }}</td>
+                                    <td>{{ scanned_qr.last_scanned.strftime('%m-%d-%y') }}</td>
+                                    <td>{{ scanned_qr.last_scanned.strftime('%I:%M:%S %p') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            
                     </table>
                     {% endif %}
                 </div>
@@ -171,81 +221,135 @@
     </div>
 
     <!-- Include JavaScript for Leaderboard -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/5.3.6/socket.io.js"></script>
-    <script>
-        // Connect to Socket.IO
-        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-    
-        // Listen for the 'update_leaderboard' event
-        socket.on('update_leaderboard', function(data) {
-            console.log("Received update_leaderboard data:", data);
-    // Use the new leaderboard data to update the DOM
-    let newLeaderboard = data.leaderboard;
-    let currentRows = $('#leaderboard-tbody').children('tr').get();
-    let newRowOrder = [];
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+<script>
+    // Connect to Socket.IO
+    const socket = io.connect('http://127.0.0.1:5000/');
 
-    // Create a map of user_id to their row element
-    let userRowMap = {};
-    currentRows.forEach(row => {
-        let userId = $(row).data('user-id');
-        userRowMap[userId] = row;
+    // Debugging: Log any event received
+    socket.onAny((event, ...args) => {
+        console.log(`Received event: ${event}`, args);
+    });
+    function updateTopAvatars(leaderboardData) {
+        const firstUserImg = document.querySelector('.first-place');
+        const secondUserImg = document.querySelector('.second-place');
+        const thirdUserImg = document.querySelector('.third-place');
+        
+        if (leaderboardData[0]) {
+            firstUserImg.src = `/view_avatar/${leaderboardData[0].user_id}`;
+        }
+        if (leaderboardData[1]) {
+            secondUserImg.src = `/view_avatar/${leaderboardData[1].user_id}`;
+        }
+        if (leaderboardData[2]) {
+            thirdUserImg.src = `/view_avatar/${leaderboardData[2].user_id}`;
+        }
+    }
+    // Update the leaderboard UI based on data received
+    function updateLeaderboardUI(leaderboardData) {
+        const tbody = document.getElementById('leaderboard-tbody');
+        tbody.innerHTML = '';  // Clear current leaderboard entries
+
+        leaderboardData.forEach((entry, index) => {
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-user-id', entry.user_id);
+
+            const numberTd = document.createElement('td');
+            numberTd.classList.add('number');
+            numberTd.innerText = index + 1;
+            tr.appendChild(numberTd);
+
+            const nameTd = document.createElement('td');
+            nameTd.classList.add('name');
+            const img = document.createElement('img');
+            img.src = `/view_avatar/${entry.user_id}`;  // Assuming the route to get the avatar
+            img.alt = 'User Avatar';
+            nameTd.appendChild(img);
+            nameTd.append(entry.username);
+            tr.appendChild(nameTd);
+
+            const pointsTd = document.createElement('td');
+            pointsTd.classList.add('points');
+            pointsTd.innerText = entry.points;
+            tr.appendChild(pointsTd);
+
+            tbody.appendChild(tr);
+            updateTopAvatars(leaderboardData);
+
+        });
+    }
+    function shortenName(name) {
+    let parts = name.split(' ');
+    if (parts.length > 1) {
+        let lastNameInitial = parts[1].charAt(0);
+        return parts[0] + ' ' + lastNameInitial;
+    }
+    return name;  // If there's no last name, return the original name
+}
+
+    // Listen for an 'update_leaderboard' event
+    socket.on('update_leaderboard', function(data) {
+        console.log("Leaderboard updated!");  
+        updateLeaderboardUI(data.leaderboard);
     });
 
-    // Build the new order of rows based on the sorted leaderboard data
-    newLeaderboard.forEach(userData => {
-        let userRow = userRowMap[userData.user_id];
-        $(userRow).find('.points').text(userData.points);
-        newRowOrder.push(userRow);
-    });
+    $(document).ready(function() {
+        var cooldownPeriod = 15000;  // 15 seconds in milliseconds
+        var buzzButton = $("#buzzButtonModal");
+        var buzzSound = document.getElementById('buzzSound');
+        
+        // Join the room corresponding to the user's group_id
+        socket.emit('join', {'room': '{{ current_user.group_id }}'});
 
-    // Animate the row changes (you might want to use jQuery UI or another library for more complex animations)
-    $('#leaderboard-tbody').empty();
-    $.each(newRowOrder, function(index, row) {
-        $(row).find('.number').text(index + 1);  // Update rank number
-        $('#leaderboard-tbody').append(row);
-    });
-});
+        // Handle the buzz button click
+        buzzButton.click(function() {
+            socket.emit('buzz_in', { 'user_id': current_user.id });
+            $(this).prop("disabled", true);  
+            $(this).css("backgroundColor", 'green'); 
+            buzzSound.play();
 
-        $(document).ready(function() {
-    var cooldownPeriod = 15000;  // 15 seconds in milliseconds
-    var buzzButton = $("#buzzButtonModal");
-    var buzzSound = document.getElementById('buzzSound');
+            // Re-enable the button after the cooldown period
+            setTimeout(function() {
+                buzzButton.prop("disabled", false);
+            }, cooldownPeriod);
+        });
 
-    // Add an event listener for when the audio finishes playing
-    buzzSound.addEventListener('ended', function() {
-        buzzButton.css("backgroundColor", '');  // Reset the button's color
-    });
+        // Listen for a successful buzz-in feedback
+        socket.on('user_buzzed_first', function(data) {
+            if(data.user_id === current_user.id) {
+                $("#buzzFeedback").show();
+            }
+        });
 
-    // Handle the buzz button click
-    buzzButton.click(function() {
-        socket.emit('buzz_in', { 'user_id': current_user.id });
-        $(this).prop("disabled", true);  // Disable the buzz button to prevent multiple clicks
-        $(this).css("backgroundColor", 'green'); // Change button's color to green
-        buzzSound.play();  // Play the buzz sound
+        // Play buzz sound when the buzz button is clicked
+        document.getElementById('buzzButtonModal').addEventListener('click', function() {
+            var buzzSound = document.getElementById('buzzSound');
+            buzzSound.play();
+        });
 
-        // Set a timeout to re-enable the button after the cooldown period
-        setTimeout(function() {
-            buzzButton.prop("disabled", false);
-        }, cooldownPeriod);
-    });
+        // Show edit profile modal when user's profile pic is clicked
+        $("#user-profile-pic").on('click', function() {
+            $('#editProfileModal').modal('show');
+        });
 
-    // Listen for a successful buzz-in feedback
-    socket.on('user_buzzed_first', function(data) {
-        if(data.user_id === current_user.id) {
-            $("#buzzFeedback").show();
+        // Submit edit profile form when save changes button inside the modal is clicked
+        $("#saveProfileChanges").on('click', function() {
+            $("#editProfileForm").submit();
+        });
+
+        // Confirm before leaving a group
+        function confirmLeaveGroup() {
+            let confirmation = confirm("Points will be reset to 0!! Are you sure you want to leave the group?");
+            if (confirmation) {
+                window.location.href = "{{ url_for('users.leave_group') }}";
+            }
         }
     });
-});
+</script>
 
-document.getElementById('buzzButtonModal').addEventListener('click', function() {
-    var buzzSound = document.getElementById('buzzSound');
-    buzzSound.play();
-});
-
-    </script>
     
 </body>
 </html>

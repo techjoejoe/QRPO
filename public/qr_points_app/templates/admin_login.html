@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>user.Login</title>
+</head>
+<body>
+    <h1>Admin Login</h1>
+    <form action="{{ url_for('user.login') }}" method="post">
+        {{ form.hidden_tag() }}
+        <label for="email">Email:</label>
+        {{ form.email() }}
+        <br>
+        <label for="password">Password:</label>
+        {{ form.password() }}
+        <br>
+        {{ form.submit() }}
+    </form>
+    <a href="{{ url_for('admin.admin_register') }}">Don't have an account? Register</a>
+</body>
+</html>

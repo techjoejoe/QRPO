@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8"/>
     <title>View Learners - {{ group.code }}</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="static/leaderboard_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
 </head>
 <body class="bg-light">
-    
-    <div class="container mt-5">
-        <h1 class="mb-4">Learners in {{ group.code }}</h1>
-        
-        
-        <!-- List of Users in the Group -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3 class="card-title">Class List</h3>
-                <ul class="list-group list-group-flush">
-                    <button id="selectRandomUser" class="btn btn-primary mt-4">Select Random User</button>
-
-                    {% for user in users %}
-<li class="list-group-item d-flex justify-content-between align-items-center" data-user-id="{{ user.id }}">
-   
-    <div>{{ user.first_name + ' ' + user.last_name }}</div>
-    <div><span class="points">{{ user.points }}</span> points</div> <!-- Wrap the points in a span with the class 'points' -->
-    <div>
-        <form action="{{ url_for('admin.add_point', user_id=user.id) }}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></button>
-        </form>
-        <form action="{{ url_for('admin.subtract_point', user_id=user.id) }}" method="post" class="d-inline ml-2">
-            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></button>
-        </form>
-    </div>
-</li>
-{% endfor %}
-
-                
-                </ul>
-            </div>
+<div class="container mt-5">
+    <h1 class="mb-4">Learners in {{ group.code }}</h1>
+    <!-- List of Users in the Group -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Class List</h3>
+            <table class="table table-striped table-hover table-responsive table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                {% for user in users %}
+                <tbody id="leaderboard-tbody">
+                    <tr class="table-row" data-user-id="{{ user.id }}">
+                        <td class="table-cell" class_="number">N/A</td>
+                        <td class="table-cell" class_="name">{{ user.first_name + ' ' + user.last_name }}</td>
+                        <td class="table-cell" class_="points">{{ user.points }}</td>
+                        <td class="table-cell" class_="actions">
+                            <form action="{{ url_for('admin.add_point', user_id=user.id) }}" class="d-inline" method="post">
+                                <button class="btn btn-success btn-sm" type="submit"><i class="fas fa-plus"></i></button>
+                            </form>
+                            <form action="{{ url_for('admin.subtract_point', user_id=user.id) }}" class="d-inline ml-2" method="post">
+                                <button class="btn btn-danger btn-sm" type="submit"><i class="fas fa-minus"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-warning mt-4">Back to Dashboard</a>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
+    <a class="btn btn-warning mt-4" href="{{ url_for('admin.admin_dashboard') }}">Back to Dashboard</a>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
         // Connect to Socket.IO
         var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
         
@@ -67,7 +73,7 @@
             }
         });
     </script>
-    <script>
+<script>
         document.getElementById('selectRandomUser').addEventListener('click', function() {
     var userList = document.querySelectorAll('.list-group-item');
     
@@ -106,13 +112,13 @@
 });
 
     </script>
-    <style>
+<style>
         .list-group-item.highlight {
             background-color: #ff8f1c; /* Gold */
             transition: background-color 0.5s ease;
         }
     </style>
-    <script>
+<script>
         // ... existing socket connection and 'update_leaderboard' event listener ...
     
         // Listen for the 'user_joined_group' event
@@ -143,6 +149,5 @@
             userList.appendChild(li);
         });
     </script>
-
 </body>
 </html>

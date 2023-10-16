@@ -3,77 +3,182 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
     <title>Login</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #020202, #190032);
+            font-family: Montserrat;
+            overflow: hidden;
+        }
+
+        .app {
+            height: 800px;
+            width: 281px;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            overflow: hidden;
+        }
+
+        .content {
+            height: 100%;
+            width: 100%;
+            transition: .3s .2s;
+        }
+
+        .button {
+            background: #F9F9F9;
+            height: 56px;
+            width: 120px;
+            margin: auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            border-radius: 28px;
+            transition: width .3s, border-radius .3s, height .3s .1s, top .3s .1s;
+        }
+
+        .button.expanded {
+    height: 220px;
+    width: 93%;
+    border-radius: 5px;
+    top: 50%;   /* Adjusted this */
+    transform: translateY(-50%);  /* Adjusted this */
+}
+
+        form {
+            width: 100%;
+            margin: auto;
+            height: 100%;
+            position: relative;
+            text-align: center;
+            transition: .3s .6s;
+        }
+
+        form.hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        input {
+            display: inline-block;
+            background: #F9F9F9;
+            width: 90%;
+            margin: 15px auto;
+            border: 0;
+            border-bottom: 1px solid lightgrey;
+            padding: 12px 0;
+            outline: 0;
+            font-size: 15px;
+        }
+
+        .sign-up {
+            width: 100%;
+            height: 22px;
+            padding: 20px 0;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            color: #5E2E91;
+            font: 500 20px Roboto;
+            text-align: center;
+            cursor: pointer;
+            transition: .5s;
+        }
+
+        .sign-up.hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        button {
+            background: #490091;
+            height: 56px;
+            width: 120px;
+            padding: 0;
+            margin: auto;
+            border: none;
+            border-radius: 28px;
+            outline: none;
+            overflow: hidden;
+            position: absolute;
+            bottom: -70px;
+            left: 0;
+            right: 0;
+            color: #F9F9F9;
+            font: 500 20px Roboto;
+            cursor: pointer;
+            transition: .3s .7s;
+        }
+
+        button.hidden {
+            width: 0;
+        }
+
+        .header {
+            background: #5E2E91;
+            width: 100%;
+            height: 56px;
+            position: absolute;
+            top: 0;
+            transition: .5s .3s;
+        }
+
+        .header.hidden {
+            top: -100%;
+        }
+
+        .account-section {
+            display: none;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;  /* Made the font size smaller */
+
+        }
+
+    </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mx-auto">
-            <div class="card">
-                <div class="card-header">
-                    Login
-                </div>
-                <div class="card-body">
-                    {% for field, errors in form.errors.items() %}
-                        {% for error in errors %}
-                            <div class="alert alert-danger">
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
-
-                    <form method="POST" action="">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            {{ form.email.label(class="form-control-label") }}
-                            {{ form.email(class="form-control form-control-lg") }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password.label(class="form-control-label") }}
-                            {{ form.password(class="form-control form-control-lg") }}
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                {{ form.remember(class="custom-control-input", id="remember") }}
-                                {{ form.remember.label(class="custom-control-label", for="remember") }}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer text-muted text-center">
-                    <small>
-                        Do not have an account? 
+    <main class="app">
+        <div class="content">
+            <div class="header hidden"></div>
+            <div class="button">
+                <div class="sign-up">LOGIN</div>
+                <form class="hidden form" action="" method="POST">
+                    {{ form.hidden_tag() }}
+                    <input type="email" placeholder="Email" name="email">
+                    <input type="password" placeholder="Password" name="password">
+                    <div class="account-section">
+                        Do not have an account? <br>
                         <a href="{{ url_for('admin.admin_register') }}">Register as Admin</a> | 
                         <a href="{{ url_for('users.register') }}">Register as User</a>
-                    </small>
-                </div>
+                    </div>
+                    <button type="submit">
+                        <span class="text">LOGIN</span>
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
-</div>
+    </main>
+    
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        var email = document.querySelector('[name="email"]').value;
-        var password = document.querySelector('[name="password"]').value;
-        
-        if (!email.includes('@')) {
-            alert('Please enter a valid email address.');
-            e.preventDefault();  // Prevent form submission
-        }
-        
-        if (password.length < 2) {
-            alert('Password must be at least 8 characters long.');
-            e.preventDefault();  // Prevent form submission
-        }
-    });
+    $(".sign-up").on('click', function() {
+        $(".button").addClass("expanded");
+        $(".sign-up").addClass("hidden");
+        $("button").removeClass("hidden");
+        $("form").removeClass("hidden");
+        $(".account-section").css('display', 'block');  // show the account section
+    })
 </script>
+
 </body>
 </html>

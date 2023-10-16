@@ -1,0 +1,390 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rubik', sans-serif;
+  font-size: 62, 5%;
+}
+
+body {
+  background: linear-gradient(135deg, #000000, #370965);
+  color: #231e1e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;  /* Prevent horizontal scroll */
+}
+
+main {
+  width: 100%; /* Span the full width */
+  max-width: none; /* Remove the max-width restriction */
+  background-color: transparent; /* Remove the white background */
+  margin: 2rem 0;
+  border-radius: 0; /* Remove the rounded corners */
+  box-shadow: none; /* Remove the shadow */
+  padding: 2rem 0; /* Keep vertical padding, remove horizontal padding */
+}
+/* Responsive Main */
+@media screen and (max-width: 1000px) {
+  main {
+    width: 95%;
+  }
+}
+
+
+/* Header Styling */
+#app-header {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Center the content */
+  align-items: center;
+  position: relative;
+}
+#app-header::before {
+  content: "";
+  width: 50px;  /* same width as the profile picture */
+  flex-shrink: 0; /* prevent it from shrinking */
+  order: 2; /* place it to the right of the title */
+}
+
+#user-profile-pic {
+  border-radius: 50%;
+  width: 50px;
+}
+
+h1 {
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  margin: 0;
+}
+.h1-wrapper {
+  flex: 1; /* Allow this to take available space */
+  text-align: center; /* Center the text */
+}
+/* Leaderboard Styling */
+#leaderboard {
+  width: 100%;
+  background-color: transparent; /* Making it transparent */
+  padding: 1rem 0; /* Keep vertical padding, remove horizontal padding */
+}
+
+#leaderboard table {
+  width: 100%;
+  table-layout: fixed;  /* This will ensure columns don't cause overflow */
+}
+#leaderboard .number {
+  width: 10%;
+  color: #f4fec9;
+  font-size: 28px; /* Adjust the size as needed */
+  font-weight: bold;
+}
+#leaderboard .name {
+  width: 60%;
+  color: #d4d4d4;
+  font-size: 16px; /* Adjust the size as needed */
+
+}
+#leaderboard .points {
+  width: 30%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#leaderboard th, #leaderboard td {
+  padding: 1rem 2rem;
+  text-align: left;
+  color: #d4d4d4;
+  font-size: 1.4rem;
+}
+/* Styling for user photo in the leaderboard */
+#leaderboard .user-photo {
+  width: 50px; /* Or any desired width */
+  height: 50px;
+  border-radius: 50%; /* To make it circular */
+  margin-right: 1rem; /* Spacing between the photo and the name */
+}
+
+/* Fixed Action Bar Styles */
+
+.fixed-action-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #767474;
+  font-size: 1.2rem;
+  padding: 5px 10px; /* Adjusted padding */
+  transition: color 0.3s ease;
+}
+
+.fixed-action-bar .btn-icon i {
+  font-size: 1.5rem;
+  margin-bottom: 2px;
+}
+
+/* Mobile Responsive Styling for Fixed Action Bar */
+
+@media screen and (max-width: 600px) {
+  .fixed-action-bar .btn-icon i {
+    font-size: 1rem; /* Reducing the font size for mobile view */
+    margin-bottom: 1px; /* Adjusting margin for mobile view */
+  }
+  .btn-icon {
+    font-size: 1rem; /* Adjusting font size for mobile view */
+    padding: 5px; /* Adjusted padding for mobile view */
+  }
+}
+
+
+/* Points History Modal */
+#pointsHistoryModal .modal-content {
+  background-color: #141a39;
+  color: #fdfdfd;
+}
+
+#pointsHistoryModal .table {
+  color: #141a39;
+}
+
+#pointsHistoryModal .table thead {
+  background-color: #fdfdfd;
+}
+#leaderboard .name img, #app-header img {
+  width: 50px; /* adjust if necessary */
+  height: 50px; /* adjust if necessary */
+  border-radius: 50%; 
+  object-fit: cover;
+  margin-right: 10px; /* only necessary for the leaderboard images */
+  border: 3px solid #FFFFFF; /* adjust border width and color as desired */
+
+}
+
+#header h2 {
+  color: rgb(190, 190, 190);
+  text-align: left;
+  margin-left: 1rem;
+  margin-top: -3.1rem;  /* Adjust this value as needed to reduce the space */
+  margin-bottom: 2.5rem;
+}
+
+
+.top-three {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* space between the images */
+}
+
+.first-place, .second-place, .third-place {
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  overflow: hidden;
+
+}
+
+.first-place {
+  width: 120px;
+  height: 120px;
+  border: 5px solid gold;
+}
+
+.second-place {
+  width: 100px;
+  height: 100px;
+  border: 4px solid silver;
+}
+
+.third-place {
+  width: 90px;
+  height: 90px;
+  border: 4px solid #cd7f32; /* bronze color */
+}
+.first-place::after, .second-place::after, .third-place::after {
+  content: ""; /* This will be updated later */
+  position: absolute;
+  bottom: -10px; /* Adjust as needed to position the circle */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px; /* Size of the circle */
+  height: 25px;
+  background-color: rgb(246, 255, 0); /* Color of the circle */
+  border-radius: 50%;
+  text-align: center;
+  line-height: 25px; /* This centers the number vertically */
+  font-weight: bold;
+}
+
+.first-place::after {
+  content: "1";
+}
+
+.second-place::after {
+  content: "2";
+}
+
+.third-place::after {
+  content: "3";
+}
+
+/* Points History Modal */
+
+.modal-content {
+  border-radius: 8px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  background-color: #4C74D9; /* Using the color from the header gradient for consistency */
+  color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.table {
+  margin-bottom: 0; /* Removing the default margin */
+  color: white;
+
+}
+
+.thead-dark th {
+  background-color: #8245BF; /* Using the color from the header gradient for consistency */
+  color: white;
+  border-color: #4C74D9; /* Giving it a lighter border color for contrast */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(76, 116, 217, 0.05); /* Lighter shade of the header color for zebra-striping */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border-color: #e0e0e0;
+}
+
+.modal-footer {
+  background-color: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+}
+#pointsHistoryModal table,
+#pointsHistoryModal table thead th,
+#pointsHistoryModal table tbody td {
+    color: white;
+}
+#pointsHistoryModal table,
+#pointsHistoryModal table thead th,
+#pointsHistoryModal table tbody td {
+    color: white;
+}
+.buzz-circle-btn {
+  box-sizing: border-box;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  border: 5px solid silver;
+  font-size: 24px;
+  line-height: 190px;
+  text-align: center;
+  padding: 0;
+  background: linear-gradient(to bottom, #ff5f5f, #d42727);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2), inset 0px -4px 10px rgba(255, 0, 0, 0.2);
+  border: 2px solid #b01f1f;
+  transition: all 0.2s;
+}
+
+.buzz-circle-btn:active {
+  background-color: green;
+  color: white; 
+  box-shadow: inset 0px 4px 10px rgba(0, 128, 0, 0.3);
+  transform: translateY(4px);
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(76, 116, 217, 0.7), rgba(130, 69, 191, 0.7)); /* Gradient with transparency */
+}
+
+.modal-backdrop {
+  background-color: transparent;
+}
+
+.join-group-container {
+  max-width: 50%; /* Adjust this as needed. This will make the form take up only 50% of its parent's width. */
+  margin-left: auto; /* This will center the form in its container. */
+  margin-right: auto; /* This will center the form in its container. */
+  padding: 0 20px; /* 0 padding on top and bottom, 20px padding on left and right sides. Adjust as needed. */
+}
+body {
+  font-family: 'montserrat', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.join-group-container {
+  max-width: 50%;
+  padding: 0 20px;
+  text-align: center;  /* Center the elements inside the join-group-container */
+}
+
+.btn-shine {
+  position: relative;
+  padding: 12px 48px;
+  color: #ffffff;
+  background: linear-gradient(to right, #54016d 0, white 10%, #9604ff 20%);
+  background-position: 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s infinite linear;
+  animation-fill-mode: forwards;
+  -webkit-text-size-adjust: none;
+  font-weight: 600;
+  font-size: 50px;
+  text-decoration: none;
+  white-space: nowrap;
+  margin-top: 20px;  /* Add some spacing between the form and the button */
+}
+
+@keyframes shine {
+  0% {
+      background-position: 0;
+  }
+  60% {
+      background-position: 180px;
+  }
+  100% {
+      background-position: 180px;
+  }
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Learners - {{ group.code }}</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <div class="container mt-5">
+        <h1 class="mb-4">Learners in {{ group.code }}</h1>
+        
+        
+        <!-- List of Users in the Group -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Class List</h3>
+                <ul class="list-group list-group-flush">
+                    <button id="selectRandomUser" class="btn btn-primary mt-4">Select Random User</button>
+
+                    {% for user in users %}
+<li class="list-group-item d-flex justify-content-between align-items-center" data-user-id="{{ user.id }}">
+   
+    <div>{{ user.first_name + ' ' + user.last_name }}</div>
+    <div><span class="points">{{ user.points }}</span> points</div> <!-- Wrap the points in a span with the class 'points' -->
+    <div>
+        <form action="{{ url_for('admin.add_point', user_id=user.id) }}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></button>
+        </form>
+        <form action="{{ url_for('admin.subtract_point', user_id=user.id) }}" method="post" class="d-inline ml-2">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></button>
+        </form>
+    </div>
+</li>
+{% endfor %}
+
+                
+                </ul>
+            </div>
+        </div>
+
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-warning mt-4">Back to Dashboard</a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        // Connect to Socket.IO
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+        
+        // Listen for the 'update_leaderboard' event
+        socket.on('user_joined', function(data) {
+            console.log('Leaderboard updated: ', data);
+        
+            // Find the row for the user
+            var row = document.querySelector(`[data-user-id="${data.user_id}"]`);
+            if(row) {
+                // Find the points cell in the row and update the points
+                var pointsCell = row.querySelector('.points');
+                if(pointsCell) {
+                    pointsCell.textContent = data.points;
+                    console.log('User Row Updated: true');
+                } else {
+                    console.log('Points cell not found!');
+                }
+            } else {
+                console.log('User row not found!');
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('selectRandomUser').addEventListener('click', function() {
+    var userList = document.querySelectorAll('.list-group-item');
+    
+    // Check if there are any users to select from
+    if(userList.length === 0) {
+        alert("No users to select from.");
+        return;
+    }
+
+    // Remove the highlight class from all users
+    userList.forEach(function(user) {
+        user.classList.remove('highlight');
+    });
+
+    var index = 0;
+    var intervalId = setInterval(function() {
+        // Remove the highlight class from the previous user
+        if(index != 0) {
+            userList[(index - 1) % userList.length].classList.remove('highlight');
+        } else {
+            userList[userList.length - 1].classList.remove('highlight');
+        }
+
+        // Add the highlight class to the current user
+        userList[index % userList.length].classList.add('highlight');
+
+        // Increment the index for the next iteration
+        index++;
+    }, 100); // Run every 100 milliseconds
+
+    // Stop after a random time
+    var stopAfter = Math.random() * 5000 + 2000; // Between 2 and 7 seconds
+    setTimeout(function() {
+        clearInterval(intervalId); // Stop the interval
+    }, stopAfter);
+});
+
+    </script>
+    <style>
+        .list-group-item.highlight {
+            background-color: #ff8f1c; /* Gold */
+            transition: background-color 0.5s ease;
+        }
+    </style>
+    <script>
+        // ... existing socket connection and 'update_leaderboard' event listener ...
+    
+        // Listen for the 'user_joined_group' event
+        socket.on('user_joined_group', function(data) {
+            console.log('User Joined Group: ', data);
+            
+            // Create a new list item for the joined user
+            var li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.dataset.userId = data.user_id;
+            
+            // Populate the list item with user data
+            li.innerHTML = `
+                <div>${data.user_name}</div>
+                <div><span class="points">${data.points}</span> points</div>
+                <div>
+                    <form action="${data.add_point_url}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></button>
+                    </form>
+                    <form action="${data.subtract_point_url}" method="post" class="d-inline ml-2">
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></button>
+                    </form>
+                </div>
+            `;
+            
+            // Append the new list item to the user list
+            var userList = document.querySelector('.list-group.list-group-flush');
+            userList.appendChild(li);
+        });
+    </script>
+
+</body>
+</html>

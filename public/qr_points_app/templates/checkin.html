@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Check-In - {{ group.code }}{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Check-In for {{ group.code }}</h1>
+    
+    <div id="qr-code" class="mb-4 text-center">
+        {% if qr_code %}
+            <img src="{{ url_for('admin.view_qr_code', qr_id=qr_code.id) }}" alt="Check-In QR Code">
+        {% endif %}
+    </div>
+
+    <!-- Render the Generate button only if the current user is an admin -->
+    {% if current_user.is_admin %}
+    <form method="POST" action="{{ url_for('admin.checkin', group_id=group.id) }}">
+        <input type="hidden" name="group_id" value="{{ group.id }}">
+        <button type="submit" class="btn btn-primary">Generate Today's Code</button>
+    </form>
+    {% endif %}
+    
+    <div id="user-list" class="list-group">
+        <!-- List of Users who have checked in -->
+        {% for user in checked_in_users %}
+        <div class="list-group-item">
+            {{ user.your_name }} - {{ user.check_in_time }}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div id="everyone-is-here" class="mt-4" style="display: {% if not all_checked_in %}none{% endif %};">
+        <p>Everyone is here!</p>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
+    
+    <!-- Your existing scripts -->
+    
+    <script type="text/javascript">
+        const socket = io.connect('http://localhost:5000'); // Replace with your server address
+        
+        socket.on('user_checked_in', function(data) {
+            const userList = document.getElementById('user-list');
+            
+            const listItem = document.createElement('div');
+            listItem.className = 'list-group-item';
+            listItem.textContent = `${data.username} - ${data.timestamp}`;
+            
+            userList.appendChild(listItem);
+        });
+    </script>
+{% endblock %}
