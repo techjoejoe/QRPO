@@ -1,7 +1,6 @@
 node_modules
 firebase.json
 firestore.indexes.json
-venv/
 node_modules/
 firestore.rules
-users/
+venv/
