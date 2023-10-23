@@ -19,6 +19,9 @@ users = Blueprint('users', __name__)
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'user_avatar')
 current_question_buzzer = {}
 
+@users.route("/check_upload_folder")
+def check_upload_folder():
+    return UPLOAD_FOLDER
 
 # ==============================
 # === UTILITY FUNCTIONS ===
