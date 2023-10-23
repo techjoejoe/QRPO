@@ -16,7 +16,7 @@ import pyheif
 from datetime import datetime, timedelta
 
 users = Blueprint('users', __name__)
-UPLOAD_FOLDER = '/Users/joe/Documents/Anew_qr_points_app/qr_points_app/static/user_avatar'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'user_avatar')
 current_question_buzzer = {}
 
 

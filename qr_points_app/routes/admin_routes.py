@@ -185,7 +185,7 @@ def manage_qr_codes(group_id):
 
             unique_url = url_for('users.handle_qr_scan', qr_code_id=qr_code.id, _external=True)
             filename = f"qr_{qr_code.id}.png"
-            generate_qr(unique_url, os.path.join('qr_points_app/static/qr_codes', filename))
+            generate_qr(unique_url, os.path.join(os.path.dirname(__file__), 'static', 'qr_codes', filename))
 
             flash('QR Code generated successfully!', 'success')
             # Re-fetch the qr_codes_list after adding a new one
@@ -268,7 +268,7 @@ def checkin(group_id):
         
         unique_url = url_for('users.handle_qr_scan', qr_code_id=new_checkin_qr.id, _external=True)
         filename = f"qr_{new_checkin_qr.id}.png"
-        generate_qr(unique_url, os.path.join('qr_points_app/static/qr_codes', filename))
+        generate_qr(unique_url, os.path.join(os.path.dirname(__file__), 'static', 'qr_codes', filename))
         
         flash('New Check-in QR Code Generated!', 'success')
         
