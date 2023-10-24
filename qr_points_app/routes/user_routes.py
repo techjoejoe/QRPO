@@ -201,7 +201,10 @@ def edit_profile():
 @users.route('/view_avatar/<int:user_id>')
 def view_avatar(user_id):  
     user = User.query.get_or_404(user_id)
-    return send_from_directory(UPLOAD_FOLDER, os.path.basename(user.user_avatar))
+    
+    # Redirect to the static URL of the avatar
+    return redirect(url_for('static', filename=user.user_avatar))
+
 
 @users.route("/logout", methods=['GET', 'POST'])
 def logout():  
