@@ -113,7 +113,7 @@
             <tr data-user-id="{{ user.id }}">
                 <td class="number">{{ loop.index }}</td>
                 <td class="name">
-                    <img src="{{ url_for('static', filename=user.user_avatar) }}" alt="User Avatar">
+                    <img src="{{ url_for('users.view_avatar', user_id=user.id) }}" alt="User Avatar">
                     {{ user.first_name + ' ' + user.last_name }}
                 </td>
                 <td class="points">{{ user.points }}</td>
