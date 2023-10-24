@@ -142,7 +142,7 @@ def register():
             next_number = get_next_avatar_number(UPLOAD_FOLDER)
             output_filename = f"avataruser{next_number}.jpg"
             output_path = os.path.join(UPLOAD_FOLDER, output_filename)
-            user.user_avatar = 'static/user_avatar/' + output_filename
+            user.user_avatar = 'user_avatar/' + output_filename
             if form.photo.data.filename.lower().endswith('.heic'):
                 temp_path = os.path.join(UPLOAD_FOLDER, f"temp_{next_number}.heic")
                 form.photo.data.save(temp_path)
@@ -181,7 +181,7 @@ def edit_profile():
         next_number = get_next_avatar_number(UPLOAD_FOLDER)
         output_filename = f"avataruser{next_number}.jpg"
         output_path = os.path.join(UPLOAD_FOLDER, output_filename)
-        current_user.user_avatar = 'static/user_avatar/' + output_filename
+        current_user.user_avatar = 'user_avatar/' + output_filename
         if photo.filename.lower().endswith('.heic'):
             temp_path = os.path.join(UPLOAD_FOLDER, f"temp_{next_number}.heic")
             photo.save(temp_path)
