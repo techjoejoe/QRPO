@@ -95,7 +95,7 @@
                 <img class="second-place" src="{{ url_for('users.view_avatar', user_id=second_user.id) }}" alt="2nd Place User">
                 {% endif %}
                 {% if first_user %}
-                <img class="first-place" src="{{ url_for('users.view_avatar', user_id=first_user.id) }}" alt="1st Place User">
+<img class="first-place" src="{{ url_for('static', filename=first_user.user_avatar) }}" alt="1st Place User">
                 {% endif %}
                 {% if third_user %}
                 <img class="third-place" src="{{ url_for('users.view_avatar', user_id=third_user.id) }}" alt="3rd Place User">
@@ -113,7 +113,7 @@
             <tr data-user-id="{{ user.id }}">
                 <td class="number">{{ loop.index }}</td>
                 <td class="name">
-                    <img src="{{ url_for('users.view_avatar', user_id=user.id) }}" alt="User Avatar">
+                    <img src="{{ url_for('static', filename=user.user_avatar) }}" alt="User Avatar">
                     {{ user.first_name + ' ' + user.last_name }}
                 </td>
                 <td class="points">{{ user.points }}</td>
