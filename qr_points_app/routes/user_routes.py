@@ -202,8 +202,11 @@ def edit_profile():
 def view_avatar(user_id):  
     user = User.query.get_or_404(user_id)
     
+    # Strip out the "static/" prefix from user.user_avatar
+    avatar_path = user.user_avatar.replace('static/', '', 1)
+    
     # Redirect to the static URL of the avatar
-    return redirect(url_for('static', filename=user.user_avatar))
+    return redirect(url_for('static', filename=avatar_path))
 
 
 @users.route("/logout", methods=['GET', 'POST'])
