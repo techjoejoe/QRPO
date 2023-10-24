@@ -19,6 +19,10 @@ users = Blueprint('users', __name__)
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'user_avatar')
 current_question_buzzer = {}
 
+@users.route("/check_upload_folder")
+def check_upload_folder():
+    return UPLOAD_FOLDER
+
 # ==============================
 # === UTILITY FUNCTIONS ===
 # ==============================
@@ -197,10 +201,7 @@ def edit_profile():
 @users.route('/view_avatar/<int:user_id>')
 def view_avatar(user_id):  
     user = User.query.get_or_404(user_id)
-    print("UPLOAD_FOLDER:", UPLOAD_FOLDER)  # This will print to your server logs.
-    print("User Avatar Path:", user.user_avatar)
     return send_from_directory(UPLOAD_FOLDER, os.path.basename(user.user_avatar))
-
 
 @users.route("/logout", methods=['GET', 'POST'])
 def logout():  
