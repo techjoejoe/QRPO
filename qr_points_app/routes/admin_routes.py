@@ -219,35 +219,35 @@ def view_learners(group_id):
 @login_required
 @admin_required
 def add_point(user_id):
-    user = User.query.get(user_id)  # Query the user from the database
+    user = User.query.get(user_id)
     if user:
-        user.points += 1  # Increment the user's points by 1
-        db.session.commit()  # Commit the changes to the database
-        
-        # Call the update_leaderboard function to send updated leaderboard
-        update_leaderboard(user.group_id)  # Update leaderboard for the user's group
+        user.points += 1
+        db.session.commit()
 
+        # Emit the entire sorted leaderboard
+        sorted_leaderboard = get_sorted_leaderboard(user.group_id)
+        socketio.emit('update_leaderboard', sorted_leaderboard)
         flash('Point added successfully!', 'success')
     else:
         flash('User not found!', 'error')
-    return redirect(url_for('admin.view_learners', group_id=user.group_id))  # Redirect back to the view_learners page of the user's group
+    return redirect(url_for('admin.view_learners', group_id=user.group_id))
 
 @admin.route('/subtract_point/<int:user_id>', methods=['POST'])
 @login_required
 @admin_required
 def subtract_point(user_id):
-    user = User.query.get(user_id)  # Query the user from the database
+    user = User.query.get(user_id)
     if user:
-        user.points -= 1  # Decrement the user's points by 1
-        db.session.commit()  # Commit the changes to the database
-        
-        # Call the update_leaderboard function to send updated leaderboard
-        update_leaderboard(user.group_id)  # Update leaderboard for the user's group
+        user.points -= 1
+        db.session.commit()
 
+        # Emit the entire sorted leaderboard
+        sorted_leaderboard = get_sorted_leaderboard(user.group_id)
+        socketio.emit('update_leaderboard', sorted_leaderboard)
         flash('Point subtracted successfully!', 'success')
     else:
         flash('User not found!', 'error')
-    return redirect(url_for('admin.view_learners', group_id=user.group_id))  # Redirect back to the view_learners page of the user's group
+    return redirect(url_for('admin.view_learners', group_id=user.group_id))
 
 
 @admin.route('/checkin/<int:group_id>', methods=['GET', 'POST'])
