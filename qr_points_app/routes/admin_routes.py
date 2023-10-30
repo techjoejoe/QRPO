@@ -288,3 +288,62 @@ def checkin(group_id):
     
     return render_template('checkin.html', qr_code=qr_code, group=group, all_checked_in=all_checked_in)
 
+def update_leaderboard(group_id):
+    print(f"update_leaderboard called with group_id: {group_id}")  # Debugging print statement
+    if not group_id:
+        print("update_leaderboard exited early due to None group_id")  # Debugging print statement
+        return  # Return early if group_id is None
+    
+    leaderboard_data = []
+    users_in_group = User.query.filter_by(group_id=group_id, is_admin=False).all()
+    for user in users_in_group:
+        leaderboard_data.append({"user_id": user.id, "username": user.first_name + ' ' + user.last_name, "points": user.points})
+
+    # Sort the leaderboard_data based on points, in descending order.
+    sorted_leaderboard_data = sorted(leaderboard_data, key=lambda x: x["points"], reverse=True)
+
+    # Now that the data is sorted, print it
+    print(f"Sending leaderboard data: {sorted_leaderboard_data}")
+    
+    socketio.emit('update_leaderboard', {'leaderboard': sorted_leaderboard_data}, room=str(group_id))
+
+@socketio.on('update_points')
+def update_points():
+    # Assuming points are passed from the frontend
+    points = request.json.get('points', 10) # Default to 10 for demonstration
+    current_user.points += points
+    db.session.commit()
+
+    # Get the rank of the current user after updating points
+    rank_subquery = db.session.query(
+        User.id,
+        User.points,
+        db.func.rank().over(order_by=db.desc(User.points)).label('rank')
+    ).subquery()
+
+    new_rank = db.session.query(rank_subquery.c.rank).filter_by(id=current_user.id).scalar()
+
+    # Emitting only the changes to the client
+    emit_data = {
+        'user_id': current_user.id,
+        'new_points': current_user.points,
+        'new_rank': new_rank
+    }
+    socketio.emit('update_leaderboard', emit_data, broadcast=True)
+    
+    @socketio.on('test_event')
+    def handle_test_event(data):
+        print("Received test_event with data:", data)
+
+def get_sorted_leaderboard(group_id):
+    # Query all users of the given group_id and sort by points in descending order
+    users = User.query.filter_by(group_id=group_id).order_by(User.points.desc()).all()
+    
+    leaderboard_data = []
+    for user in users:
+        leaderboard_data.append({
+            'user_id': user.id,
+            'username': user.first_name + ' ' + user.last_name,
+            'points': user.points
+        })
+    return leaderboard_data

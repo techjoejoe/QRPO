@@ -226,8 +226,11 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
 <script>
-    // Connect to Socket.IO
-    const socket = io.connect('http://127.0.0.1:5000/');
+     // Connect to Socket.IO
+     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+        socket.onAny((event, ...args) => {
+    console.log(`Received event: ${event}`, args);
+});
 
     // Debugging: Log any event received
     socket.onAny((event, ...args) => {
@@ -290,11 +293,38 @@
     return name;  // If there's no last name, return the original name
 }
 
-    // Listen for an 'update_leaderboard' event
+    // Listen for the 'update_leaderboard' event
     socket.on('update_leaderboard', function(data) {
-        console.log("Leaderboard updated!");  
-        updateLeaderboardUI(data.leaderboard);
-    });
+            console.log("Received data from update_leaderboard:", data);
+    
+    if (data.hasOwnProperty('user_id')) {
+            console.log("Updating individual user.");
+        let userRow = $('#leaderboard-tbody').find(`[data-user-id="${data.user_id}"]`);
+        $(userRow).find('.points').text(data.points);
+    } else if (Array.isArray(data)) {
+        console.log("Updating entire leaderboard.");
+        let newRowOrder = [];
+        let currentRows = $('#leaderboard-tbody').children();
+        let userRowMap = {};
+
+        currentRows.each(function() {
+            let userId = $(this).data('user-id');
+            userRowMap[userId] = this;
+        });
+
+        data.forEach(userData => {
+            let userRow = userRowMap[userData.user_id];
+            $(userRow).find('.points').text(userData.points);
+            newRowOrder.push(userRow);
+        });
+
+        $('#leaderboard-tbody').empty();
+        $.each(newRowOrder, function(index, row) {
+            $(row).find('.number').text(index + 1);  // Update rank number
+            $('#leaderboard-tbody').append(row);
+        });
+    }
+});
 
     $(document).ready(function() {
         var cooldownPeriod = 15000;  // 15 seconds in milliseconds
