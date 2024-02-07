@@ -11,8 +11,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import cast, Date
 from werkzeug.utils import secure_filename
 import os, re, time
-from PIL import Image
 import pyheif
+from PIL import Image, Exiftags
 from datetime import datetime, timedelta
 
 users = Blueprint('users', __name__)
@@ -45,7 +45,23 @@ def update_leaderboard():
         return {'leaderboard': leaderboard_data}
     else:
         return {'leaderboard': []}
-
+        
+def correct_image_orientation(image):
+    try:
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = image._getexif()
+        if exif[orientation] == 3:
+            image = image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            image = image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            image = image.rotate(90, expand=True)
+    except (AttributeError, KeyError, TypeError, IndexError):
+        # No EXIF information or no orientation info
+        pass
+    return image
 
 # ==============================
 # === SOCKET.IO EVENT HANDLERS ===
@@ -150,6 +166,7 @@ def register():
                 os.remove(temp_path)
             else:
                 image = Image.open(form.photo.data)
+                image = correct_image_orientation(image)  # Correct the orientation based on EXIF
                 image.save(output_path, "JPEG")
         else:
             user.user_avatar = user.set_default_avatar()
@@ -189,6 +206,7 @@ def edit_profile():
             os.remove(temp_path)
         else:
             image = Image.open(photo)
+            image = correct_image_orientation(image)  # Correct the orientation based on EXIF
             image.save(output_path, "JPEG")
     try:
         db.session.commit()
