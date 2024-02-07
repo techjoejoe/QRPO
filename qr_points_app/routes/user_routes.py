@@ -235,38 +235,35 @@ def logout():
 @users.route('/handle_qr_scan/<int:qr_code_id>', methods=['GET'])
 @login_required
 def handle_qr_scan(qr_code_id):
-    print(f"Starting handle_qr_scan for user {current_user.id} and QR code {qr_code_id}")
-
     qr_code = QRCode.query.get_or_404(qr_code_id)
     scanned_qr = ScannedQR.query.filter_by(user_id=current_user.id, qr_code_id=qr_code_id).first()
-    
+
     if scanned_qr:
-        print(f"scanned_qr exists for user {current_user.id} and QR code {qr_code_id}")
-
         if datetime.utcnow() - scanned_qr.last_scanned < timedelta(minutes=3):
-            print(f"QR code {qr_code_id} was scanned less than 3 minutes ago by user {current_user.id}")
             flash("You've recently scanned this QR code.", "warning")
-            return redirect(url_for('users.user_dashboard'))
-        
-        print(f"Updating last_scanned and points_received for user {current_user.id} and QR code {qr_code_id}")
-        scanned_qr.last_scanned = datetime.utcnow()
-        scanned_qr.points_received = qr_code.value
-        db.session.commit()
-        current_user.points += qr_code.value
-        db.session.commit()
-        updated_leaderboard_data = update_leaderboard()  # This function should return the latest leaderboard data
-        emit('update_leaderboard', updated_leaderboard_data, namespace='/', room=str(current_user.group_id), broadcast=True)
+        else:
+            scanned_qr.last_scanned = datetime.utcnow()
+            current_user.points += qr_code.value  # Update user points
+            db.session.commit()
+            flash(f"Successfully scanned {qr_code.description} for {qr_code.value} points!", "success")
     else:
-        print(f"scanned_qr does not exist for user {current_user.id}. Creating a new entry for QR code {qr_code_id}")
-        new_scan = ScannedQR(user_id=current_user.id, qr_code_id=qr_code_id, points_received=qr_code.value, last_scanned=datetime.utcnow())
-        current_user.points += qr_code.value
+        new_scan = ScannedQR(user_id=current_user.id, qr_code_id=qr_code_id, last_scanned=datetime.utcnow(), points_received=qr_code.value)
         db.session.add(new_scan)
+        current_user.points += qr_code.value  # Update user points
         db.session.commit()
+        flash(f"Successfully scanned {qr_code.description} for {qr_code.value} points!", "success")
 
+    # Emit updated leaderboard after QR scan
+    updated_leaderboard_data = get_sorted_leaderboard(current_user.group_id)
+    socketio.emit('update_leaderboard', {'leaderboard': updated_leaderboard_data}, broadcast=True)
 
-    flash(f"Successfully scanned {qr_code.description} for {qr_code.value} points!", "success")
     return redirect(url_for('users.user_dashboard'))
 
+def get_sorted_leaderboard(group_id):
+    """Fetch and sort the leaderboard data for the given group ID."""
+    users_in_group = User.query.filter_by(group_id=group_id).order_by(User.points.desc()).all()
+    leaderboard_data = [{"user_id": user.id, "username": f"{user.first_name} {user.last_name}", "points": user.points} for user in users_in_group]
+    return leaderboard_data
 
 @users.route('/join_group', methods=['GET', 'POST'])
 def join_group():  
